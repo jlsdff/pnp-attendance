@@ -1,4 +1,4 @@
-package com.example.pnpattendance.services;
+package com.example.pnpattendance.services.adminService;
 
 
 import com.example.pnpattendance.models.Admin;
@@ -21,9 +21,7 @@ public class AdminService implements IAdminService{
 
     @Override
     public Admin createAdmin(Admin admin) {
-
         return adminRepository.save(admin);
-
     }
 
     @Override
@@ -46,6 +44,6 @@ public class AdminService implements IAdminService{
 
     @Override
     public Admin getAdminByEmail(String email) {
-        return adminRepository.findByEmail(email);
+        return adminRepository.findByEmail(email).orElse(null);
     }
 }

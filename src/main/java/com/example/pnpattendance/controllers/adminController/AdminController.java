@@ -1,8 +1,8 @@
-package com.example.pnpattendance.controllers;
+package com.example.pnpattendance.controllers.adminController;
 
-import com.example.pnpattendance.Response;
+import com.example.pnpattendance.response.Response;
 import com.example.pnpattendance.models.Admin;
-import com.example.pnpattendance.services.IAdminService;
+import com.example.pnpattendance.services.adminService.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
@@ -26,6 +26,9 @@ public class AdminController {
     public ResponseEntity<Admin> createAdmin(@RequestBody Admin admin) {
 
         try{
+            if(admin.getEmail().isEmpty() || admin.getPassword().isEmpty()){
+                return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            }
             Admin newAdmin = adminService.createAdmin(admin);
             return new ResponseEntity<>(newAdmin, HttpStatus.CREATED);
         }
@@ -34,10 +37,9 @@ public class AdminController {
         }
     }
 
-    @PostMapping(path = "/update/{id}")
+    @PutMapping(path = "/{id}")
     public Admin updateAdmin(@PathVariable(value = "id") long id, @RequestBody Admin admin) {
-        adminService.updateAdmin(id, admin);
-        return admin;
+        return adminService.updateAdmin(id, admin);
     }
 
     @GetMapping(path = "/{id}")
@@ -46,7 +48,7 @@ public class AdminController {
         Optional<Admin> admin = adminService.getAdmin(id);
 
         if (admin.isPresent()) {
-            return new Response("Admin found", "Success", admin);
+            return new Response("Admin found", "Success", admin.get());
         }
 
         return new Response("Admin not found", "Failed", null);
@@ -58,8 +60,18 @@ public class AdminController {
         return 1;
     }
 
-    @GetMapping(path = "/email/{email}")
-    public Admin getAdminByEmail(@PathVariable(value = "email") String email) {
-        return adminService.getAdminByEmail(email);
+    @GetMapping(path = "/email")
+    public Response getAdminByEmail(@RequestBody Admin admin) {
+
+        String email = admin.getEmail();
+
+        System.out.println(email);
+
+        Admin foundAdmin = adminService.getAdminByEmail(email);
+
+        if(foundAdmin == null){
+            return new Response("Wrong email", "Failed", null);
+        }
+        return new Response("Admin found", "Success", foundAdmin);
     }
 }

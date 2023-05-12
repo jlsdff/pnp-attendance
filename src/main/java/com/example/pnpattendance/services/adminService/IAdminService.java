@@ -1,4 +1,4 @@
-package com.example.pnpattendance.services;
+package com.example.pnpattendance.services.adminService;
 
 import com.example.pnpattendance.models.Admin;
 

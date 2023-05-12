@@ -1,4 +1,4 @@
-package com.example.pnpattendance;
+package com.example.pnpattendance.response;
 
 import lombok.Data;
 

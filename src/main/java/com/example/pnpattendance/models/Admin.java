@@ -5,19 +5,22 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
+import org.hibernate.annotations.Cascade;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.io.Serializable;
 import java.sql.Timestamp;
 
 @Entity
 @Data
 @Table(name = "tbl_admin")
-public class Admin {
+public class Admin implements Serializable{
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long admin_id;
 
-    @NotBlank(message = "Email is required")
+
     @Column(name="email", unique = true)
     private String email;
 
@@ -34,17 +37,20 @@ public class Admin {
     private String lastName;
 
     @Column(name = "password")
-    @NotBlank
     private String password;
 
     @Column(name = "timestamp")
+    @CreatedDate
     private Timestamp timestamp;
 
-    public Admin(@JsonProperty("firstName") String firstName,
+    public Admin(
+                 @JsonProperty("admin_id") long admin_id,
+                 @JsonProperty("firstName") String firstName,
                  @JsonProperty("middleName") String middleName,
                  @JsonProperty("lastName") String lastName,
                  @JsonProperty("email") String email,
                  @JsonProperty("password")String password) {
+        this.admin_id = admin_id;
         this.firstName = firstName;
         this.middleName = middleName;
         this.lastName = lastName;
