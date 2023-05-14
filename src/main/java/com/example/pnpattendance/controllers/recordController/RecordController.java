@@ -34,7 +34,7 @@ public class RecordController {
     }
 
     @GetMapping()
-    public Iterable getDailyRecord(@RequestBody @NotNull ModDate date){
+    public Iterable getDailyRecords(@RequestBody @NotNull ModDate date){
         return recordService.findAllByDate(date.toSqlDate());
     }
 
