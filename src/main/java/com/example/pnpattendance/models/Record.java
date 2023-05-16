@@ -18,11 +18,11 @@ public class Record {
     @Column(name = "record_id")
     private long recordId;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "officer_id")
     private Officer officer;
 
-    @ManyToOne
+    @ManyToOne(cascade = {CascadeType.ALL})
     @JoinColumn(name = "admin_id")
     private Admin admin;
 

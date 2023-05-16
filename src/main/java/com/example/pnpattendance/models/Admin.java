@@ -57,6 +57,9 @@ public class Admin implements Serializable{
         this.email = email;
         this.password = password;
     }
+    public Admin(long badgeNumber) {
+        this.admin_id = admin_id;
+    }
 
     public Admin() {
     }

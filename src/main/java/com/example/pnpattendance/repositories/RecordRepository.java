@@ -12,7 +12,6 @@ import java.util.List;
 public interface RecordRepository extends JpaRepository<Record, Long> {
     public List<Record> findAllByDateAfterAndDateBefore(Date startDate, Date endDate);
     public List<Record> findAllByDate(Date date);
-
     public Record findRecordByOfficer_BadgeNumberAndDate(long badgeNumber, Date date);
 
 }

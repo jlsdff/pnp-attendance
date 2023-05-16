@@ -50,4 +50,8 @@ public class Officer implements Serializable {
         this.dutyOut = dutyOut;
     }
 
+    public Officer(long id){
+        this.badgeNumber = id;
+    }
+
 }

@@ -1,9 +1,13 @@
 package com.example.pnpattendance.services.recordService;
 
 
+import com.example.pnpattendance.models.Admin;
 import com.example.pnpattendance.models.Officer;
 import com.example.pnpattendance.models.Record;
+import com.example.pnpattendance.repositories.IAdminRepository;
+import com.example.pnpattendance.repositories.OfficerRepository;
 import com.example.pnpattendance.repositories.RecordRepository;
+import com.example.pnpattendance.request.RecordRequestBody;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -18,8 +22,16 @@ public class RecordService implements IRecordService{
 
     @Autowired
     private final RecordRepository recordRepository;
+    private final IAdminRepository adminRepository;
+    private final OfficerRepository officerRepository;
 
-    public RecordService(RecordRepository recordRepository){
+    public RecordService(
+            RecordRepository recordRepository,
+            IAdminRepository adminRepository,
+            OfficerRepository officerRepository)
+    {
+        this.adminRepository = adminRepository;
+        this.officerRepository = officerRepository;
         this.recordRepository = recordRepository;
     }
 
@@ -30,22 +42,31 @@ public class RecordService implements IRecordService{
     }
 
     @Override
-    public Record save(Record record){
+    public Record save(RecordRequestBody record){
 
-        long badgeNumber = record.getOfficer().getBadgeNumber();
+        long badgeNumber = record.getBadgeNumber();
         Date date = record.getDate();
 
-        // Check if record already exists
         Record existingRecord = recordRepository
-                .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date);
+              .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date);
 
-        // If record exists, update the time-out
         if(existingRecord != null){
-            existingRecord.setTimeOut(record.getTimeOut());
+            existingRecord.setTimeOut(record.getTime());
             return recordRepository.save(existingRecord);
         }
 
-        return recordRepository.save(record);
+        Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
+        Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
+
+        Record newRecord = new Record(
+              admin,
+              officer,
+              record.getTime(),
+              null,
+              record.getDate()
+        );
+
+        return recordRepository.save(newRecord);
     }
 
     @Override
@@ -70,7 +91,7 @@ public class RecordService implements IRecordService{
     }
 
     @Override
-    public List<Record> getAnnualRecordsByMonth(int year, int month) {
+    public List<Record> getMonthlyRecords(int year, int month) {
 
         List<Record> records = recordRepository
                 .findAll()

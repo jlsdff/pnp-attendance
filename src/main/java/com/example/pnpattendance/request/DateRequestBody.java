@@ -5,15 +5,14 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.time.LocalDate;
-import java.util.Calendar;
 
 @Data
-public class ModDate{
+public class DateRequestBody {
     private int year;
     private int month;
     private int day;
 
-    public ModDate(
+    public DateRequestBody(
             @JsonProperty("year") int year,
             @JsonProperty("month") int month,
             @JsonProperty("day") int day) {

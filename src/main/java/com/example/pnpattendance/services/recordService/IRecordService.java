@@ -1,6 +1,7 @@
 package com.example.pnpattendance.services.recordService;
 
 import com.example.pnpattendance.models.Record;
+import com.example.pnpattendance.request.RecordRequestBody;
 
 import java.sql.Date;
 import java.util.List;
@@ -8,7 +9,7 @@ import java.util.List;
 public interface IRecordService {
     public Iterable findAll();
 
-    public Record save(Record record);
+    public Record save(RecordRequestBody record);
 
     public Iterable findAllByDate(Date date);
 
@@ -16,5 +17,5 @@ public interface IRecordService {
 
     public List<Record> getAnnualRecords(int year);
 
-    public List<Record> getAnnualRecordsByMonth(int year, int month);
+    public List<Record> getMonthlyRecords(int year, int month);
 }
