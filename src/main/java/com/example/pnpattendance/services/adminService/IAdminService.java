@@ -15,4 +15,6 @@ public interface IAdminService {
     void deleteAdmin(long adminId);
 
     Admin getAdminByEmail(String email);
+
+    Admin getAdminByEmailAndPassword(String email, String password);
 }

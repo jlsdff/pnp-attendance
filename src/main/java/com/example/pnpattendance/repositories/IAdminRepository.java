@@ -11,4 +11,6 @@ public interface IAdminRepository extends CrudRepository<Admin, Long> {
 
     Optional<Admin> findByEmail(String email);
 
+    Optional<Admin> findByEmailAndPassword(String email, String password);
+
 }

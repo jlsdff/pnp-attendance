@@ -4,6 +4,7 @@ import com.example.pnpattendance.response.Response;
 import com.example.pnpattendance.models.Admin;
 import com.example.pnpattendance.services.adminService.IAdminService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -62,9 +63,7 @@ public class AdminController {
     }
 
     @GetMapping(path = "/email")
-    public Response getAdminByEmail(@RequestBody Admin admin) {
-
-        String email = admin.getEmail();
+    public Response getAdminByEmail(@RequestParam("email") String email) {
 
         System.out.println(email);
 
@@ -74,5 +73,14 @@ public class AdminController {
             return new Response("Wrong email", "Failed", null);
         }
         return new Response("Admin found", "Success", foundAdmin);
+    }
+
+    @GetMapping(path = "/login")
+    public Response login(@RequestParam String email, @RequestParam String password){
+        Admin admin = adminService.getAdminByEmailAndPassword(email, password);
+        if(admin == null){
+            return new Response("Invalid Credentials", "Failed", null);
+        }
+        return new Response("Admin Found", "Sucess", admin);
     }
 }

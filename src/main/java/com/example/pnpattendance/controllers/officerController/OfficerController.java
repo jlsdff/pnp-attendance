@@ -31,4 +31,11 @@ public class OfficerController {
         return officer;
     }
 
+    @GetMapping(path = "/all")
+    public Iterable getAll(){
+        return officerService.getAll();
+    }
+
+
+
 }

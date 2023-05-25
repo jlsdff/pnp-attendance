@@ -13,9 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
-import java.sql.Time;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class RecordService implements IRecordService{
@@ -57,7 +55,9 @@ public class RecordService implements IRecordService{
 
         Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
         Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
-
+        if(admin == null || officer == null){
+            return null;
+        }
         Record newRecord = new Record(
               admin,
               officer,

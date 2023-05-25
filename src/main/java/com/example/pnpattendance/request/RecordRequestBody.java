@@ -9,6 +9,7 @@ import lombok.Data;
 
 import java.sql.Date;
 import java.sql.Time;
+import java.time.LocalDate;
 
 @Data
 public class RecordRequestBody {
@@ -20,12 +21,11 @@ public class RecordRequestBody {
     public RecordRequestBody(
             @JsonProperty("adminId") long adminId,
             @JsonProperty("badgeNumber") long badgeNumber,
-            @JsonProperty("time") Time time,
-            @JsonProperty("date") Date date){
+            @JsonProperty("time") Time time){
         this.adminId = adminId;
         this.badgeNumber = badgeNumber;
         this.time = time;
-        this.date = date;
+        this.date = Date.valueOf(LocalDate.now());
     }
 
 }

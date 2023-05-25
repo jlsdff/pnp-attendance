@@ -46,4 +46,10 @@ public class AdminService implements IAdminService{
     public Admin getAdminByEmail(String email) {
         return adminRepository.findByEmail(email).orElse(null);
     }
+
+    @Override
+    public Admin getAdminByEmailAndPassword(String email, String password) {
+        Optional<Admin> admin = adminRepository.findByEmailAndPassword(email, password);
+        return admin.orElse(null);
+    }
 }

@@ -6,6 +6,7 @@ import com.example.pnpattendance.repositories.OfficerRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 
@@ -23,5 +24,10 @@ public class OfficerService implements IOfficerService{
     public Officer getOfficer(long id) {
         Optional<Officer> officer = officerRepository.findByBadgeNumber(id);
         return officer.orElse(null);
+    }
+
+    @Override
+    public Iterable<Officer> getAll() {
+        return officerRepository.findAll();
     }
 }
