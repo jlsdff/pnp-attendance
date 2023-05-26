@@ -35,6 +35,15 @@ public class Record {
     @Column(name = "date")
     private Date date;
 
+    @Column(name="late")
+    private boolean isLate;
+
+    @Column(name="undertime")
+    private boolean isUndertime;
+
+    @Column(name="overtime")
+    private boolean isOvertime;
+
     public Record(){}
 
     public Record(
@@ -42,13 +51,19 @@ public class Record {
             Officer officer,
             Time timeIn,
             Time timeOut,
-            Date date
+            Date date,
+            boolean isLate,
+            boolean isUndertime,
+            boolean isOvertime
     ){
         this.admin = admin;
         this.officer = officer;
         this.timeIn = timeIn;
         this.timeOut = timeOut;
         this.date = date;
+        this.isLate = isLate;
+        this.isUndertime = isUndertime;
+        this.isOvertime = isOvertime;
     }
 
 }

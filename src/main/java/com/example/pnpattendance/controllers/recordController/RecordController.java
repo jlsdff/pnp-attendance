@@ -45,7 +45,7 @@ public class RecordController {
 
     @PostMapping
     public Record save(@RequestBody @NotNull RecordRequestBody record){
-        record.setDate(Date.valueOf(LocalDate.now()));
+        System.out.println(record.toString());
         return recordService.save(record);
     }
 

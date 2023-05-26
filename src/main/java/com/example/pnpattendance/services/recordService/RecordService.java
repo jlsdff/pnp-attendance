@@ -13,7 +13,11 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.sql.Date;
+import java.sql.Time;
+import java.time.Instant;
+import java.time.LocalTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class RecordService implements IRecordService{
@@ -42,28 +46,50 @@ public class RecordService implements IRecordService{
     @Override
     public Record save(RecordRequestBody record){
 
+        // Verify admin and officer
+        Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
+        Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
+
+        // return null if admin or officer is null
+        if(admin == null || officer == null){
+            return null;
+        }
+
         long badgeNumber = record.getBadgeNumber();
         Date date = record.getDate();
 
-        Record existingRecord = recordRepository
-              .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date);
+        LocalTime officerTimeOut = officer.getDutyOut().toLocalTime();
+        LocalTime officerTimeIn = officer.getDutyOn().toLocalTime();
+        LocalTime recordTime = record.getTime().toLocalTime();
 
+        // Check existing record
+        Record existingRecord = recordRepository
+              .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date).orElse(null);
+
+        // If record exists, update the time-out and status
         if(existingRecord != null){
+
+            if(officerTimeOut.isBefore(recordTime)){
+                existingRecord.setUndertime(true);
+            }
+            if(officerTimeOut.isAfter(recordTime) && !existingRecord.isLate()){
+                existingRecord.setOvertime(true);
+            }
+
             existingRecord.setTimeOut(record.getTime());
             return recordRepository.save(existingRecord);
         }
 
-        Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
-        Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
-        if(admin == null || officer == null){
-            return null;
-        }
+        // Create new record
         Record newRecord = new Record(
               admin,
               officer,
               record.getTime(),
               null,
-              record.getDate()
+              record.getDate(),
+                officerTimeIn.isBefore(recordTime),
+                false,
+                false
         );
 
         return recordRepository.save(newRecord);
