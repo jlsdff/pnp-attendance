@@ -1,8 +1,8 @@
 package com.example.pnpattendance.controllers.officerController;
 
-import com.example.pnpattendance.models.Admin;
 import com.example.pnpattendance.models.Officer;
 import com.example.pnpattendance.services.officerService.IOfficerService;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -30,7 +30,7 @@ public class OfficerController {
     }
 
     @GetMapping(path = "/all")
-    public Iterable getAll() {
+    public Iterable<Officer> getAll() {
         return officerService.getAll();
     }
 

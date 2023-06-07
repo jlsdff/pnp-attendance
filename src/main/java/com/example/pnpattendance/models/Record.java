@@ -1,7 +1,6 @@
 package com.example.pnpattendance.models;
 
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import lombok.Data;
 

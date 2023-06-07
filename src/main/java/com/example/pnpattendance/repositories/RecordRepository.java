@@ -1,7 +1,5 @@
 package com.example.pnpattendance.repositories;
 
-import com.example.pnpattendance.controllers.officerController.OfficerController;
-import com.example.pnpattendance.models.Officer;
 import com.example.pnpattendance.models.Record;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;

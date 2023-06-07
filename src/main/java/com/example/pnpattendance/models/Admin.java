@@ -5,7 +5,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
-import org.hibernate.annotations.Cascade;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.io.Serializable;
@@ -56,9 +55,6 @@ public class Admin implements Serializable{
         this.lastName = lastName;
         this.email = email;
         this.password = password;
-    }
-    public Admin(long badgeNumber) {
-        this.admin_id = admin_id;
     }
 
     public Admin() {

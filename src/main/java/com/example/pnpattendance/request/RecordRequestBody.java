@@ -1,9 +1,5 @@
 package com.example.pnpattendance.request;
 
-
-import com.example.pnpattendance.models.Admin;
-import com.example.pnpattendance.models.Officer;
-import com.example.pnpattendance.models.Record;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
