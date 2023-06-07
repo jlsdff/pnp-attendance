@@ -10,8 +10,16 @@ import java.util.Optional;
 
 public interface IOfficerService {
 
-    Officer getOfficer(long id);
+    Officer getOfficer(long id); //get officer by id
 
-    Iterable<Officer> getAll();
+    Iterable<Officer> getAll(); // get all officers
+
+    Officer addOfficer(Officer officer); // Create
+
+    Officer deleteOfficer(long id); // Delete
+
+    Officer updateOfficer(long id, Officer officer); // Update
+
+    
 
 }

@@ -1,6 +1,5 @@
 package com.example.pnpattendance.services.recordService;
 
-
 import com.example.pnpattendance.models.Admin;
 import com.example.pnpattendance.models.Officer;
 import com.example.pnpattendance.models.Record;
@@ -8,6 +7,8 @@ import com.example.pnpattendance.repositories.IAdminRepository;
 import com.example.pnpattendance.repositories.OfficerRepository;
 import com.example.pnpattendance.repositories.RecordRepository;
 import com.example.pnpattendance.request.RecordRequestBody;
+import com.example.pnpattendance.request.WholeRecordRequestBody;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,12 +16,14 @@ import org.springframework.stereotype.Service;
 import java.sql.Date;
 import java.sql.Time;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
 @Service
-public class RecordService implements IRecordService{
+public class RecordService implements IRecordService {
 
     @Autowired
     private final RecordRepository recordRepository;
@@ -30,28 +33,27 @@ public class RecordService implements IRecordService{
     public RecordService(
             RecordRepository recordRepository,
             IAdminRepository adminRepository,
-            OfficerRepository officerRepository)
-    {
+            OfficerRepository officerRepository) {
         this.adminRepository = adminRepository;
         this.officerRepository = officerRepository;
         this.recordRepository = recordRepository;
     }
 
     @Override
-    public Iterable<Record> findAll(){
-        Iterable<Record> records = recordRepository.findAll(Sort.by(Sort.Direction.DESC, "recordId"));
-        return records;
+    public List<Record> findAll() {
+        List<Record> recordList = new ArrayList<>(recordRepository.findAll(Sort.by(Sort.Direction.DESC, "recordId")));
+        return recordList;
     }
 
     @Override
-    public Record save(RecordRequestBody record){
+    public Record save(RecordRequestBody record) {
 
         // Verify admin and officer
         Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
         Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
 
         // return null if admin or officer is null
-        if(admin == null || officer == null){
+        if (admin == null || officer == null) {
             return null;
         }
 
@@ -64,15 +66,15 @@ public class RecordService implements IRecordService{
 
         // Check existing record
         Record existingRecord = recordRepository
-              .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date).orElse(null);
+                .findRecordByOfficer_BadgeNumberAndDate(badgeNumber, date).orElse(null);
 
         // If record exists, update the time-out and status
-        if(existingRecord != null){
+        if (existingRecord != null) {
 
-            if(officerTimeOut.isBefore(recordTime)){
+            if (officerTimeOut.isBefore(recordTime)) {
                 existingRecord.setUndertime(true);
             }
-            if(officerTimeOut.isAfter(recordTime) && !existingRecord.isLate()){
+            if (officerTimeOut.isAfter(recordTime) && !existingRecord.isLate()) {
                 existingRecord.setOvertime(true);
             }
 
@@ -82,27 +84,26 @@ public class RecordService implements IRecordService{
 
         // Create new record
         Record newRecord = new Record(
-              admin,
-              officer,
-              record.getTime(),
-              null,
-              record.getDate(),
+                admin,
+                officer,
+                record.getTime(),
+                null,
+                record.getDate(),
                 officerTimeIn.isBefore(recordTime),
                 false,
-                false
-        );
+                false);
 
         return recordRepository.save(newRecord);
     }
 
     @Override
-    public Iterable findAllByDate(Date date) {
-        Iterable<Record> records = recordRepository.findAllByDate(date);
-        return records;
+    public List<Record> findAllByDate(Date date) {
+        LocalDate localDate = date.toLocalDate().plusDays(1);
+        return recordRepository.findRecordsByDateEquals(Date.valueOf(localDate));
     }
 
     @Override
-    public Iterable getAllByWeek(Date startDate, Date endDate) {
+    public List<Record> getAllByWeek(Date startDate, Date endDate) {
         return recordRepository.findAllByDateAfterAndDateBefore(startDate, endDate);
     }
 
@@ -122,15 +123,48 @@ public class RecordService implements IRecordService{
         List<Record> records = recordRepository
                 .findAll()
                 .stream()
-                .filter(record ->
-                        record.getDate()
-                            .toLocalDate()
-                            .getYear() == year
+                .filter(record -> record.getDate()
+                        .toLocalDate()
+                        .getYear() == year
                         &&
                         record.getDate()
                                 .toLocalDate()
                                 .getMonthValue() == month)
                 .toList();
         return records;
+    }
+
+    @Override
+    public Record wholeSave(WholeRecordRequestBody record) {
+
+        // Verify admin and officer
+        Admin admin = adminRepository.findById(record.getAdminId()).orElse(null);
+        Officer officer = officerRepository.findById(record.getBadgeNumber()).orElse(null);
+
+        if (admin == null || officer == null) {
+            return null;
+        }
+
+        LocalTime officerTimeOut = officer.getDutyOut().toLocalTime();
+        LocalTime officerTimeIn = officer.getDutyOn().toLocalTime();
+        LocalTime recordTimeIn = record.getTimeIn().toLocalTime();
+        LocalTime recordTimeOut = record.getTimeOut().toLocalTime();
+
+        Record newRecord = new Record(
+                admin,
+                officer,
+                record.getTimeIn(),
+                record.getTimeOut(),
+                record.getDate(),
+                officerTimeIn.isBefore(recordTimeIn),
+                officerTimeOut.isBefore(recordTimeOut),
+                officerTimeOut.isAfter(recordTimeOut) && !officerTimeIn.isBefore(recordTimeIn));
+
+        return recordRepository.save(newRecord);
+    }
+
+    @Override
+    public List<Record> findAllByOfficerId(long id) {
+        return recordRepository.findAllRecordByOfficer_BadgeNumber(id);
     }
 }

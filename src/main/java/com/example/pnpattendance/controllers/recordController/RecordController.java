@@ -4,6 +4,7 @@ package com.example.pnpattendance.controllers.recordController;
 import com.example.pnpattendance.models.Record;
 import com.example.pnpattendance.request.DateRequestBody;
 import com.example.pnpattendance.request.RecordRequestBody;
+import com.example.pnpattendance.request.WholeRecordRequestBody;
 import com.example.pnpattendance.services.recordService.IRecordService;
 import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,12 +28,12 @@ public class RecordController {
     }
 
     @GetMapping("/all")
-    public Iterable findAll(){
+    public List<Record> findAll(){
         return recordService.findAll();
     }
 
     @GetMapping()
-    public Iterable getDailyRecords(
+    public List<Record> getDailyRecords(
             @RequestParam( name = "year" ) int year,
             @RequestParam( name = "month" ) int month,
             @RequestParam( name = "day" ) int day
@@ -43,20 +44,31 @@ public class RecordController {
         return recordService.findAllByDate(date.toSqlDate());
     }
 
-    @PostMapping
+    @GetMapping(path = "/{id}")
+    public List<Record> getByOfficerId(
+            @PathVariable( name = "id" ) long id
+    ){
+        return recordService.findAllByOfficerId(id);
+    }
+
+    @PostMapping()
     public Record save(@RequestBody @NotNull RecordRequestBody record){
         System.out.println(record.toString());
         return recordService.save(record);
     }
 
+    @PostMapping("/whole")
+    public Record wholeSave(@RequestBody @NotNull WholeRecordRequestBody record){
+        return recordService.wholeSave(record);
+    }
+
     @GetMapping("/weekly")
-    public Iterable getWeeklyRecords(
+    public List<Record> getWeeklyRecords(
             @RequestParam( name = "year" ) int year,
             @RequestParam( name = "month" ) int month,
             @RequestParam( name = "day" ) int day
     ){
-        DateRequestBody date = new DateRequestBody(year, month, day);
-        date.setDay(date.getDay()-1);
+        DateRequestBody date = DateRequestBody.of(year, month, day);
         return recordService.getAllByWeek(date.toSqlDate(), date.getWeekLater());
     }
 

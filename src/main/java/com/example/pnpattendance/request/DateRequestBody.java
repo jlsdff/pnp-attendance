@@ -21,8 +21,13 @@ public class DateRequestBody {
         this.day = day;
     }
 
+    public static DateRequestBody of(int year, int month, int day){
+        return new DateRequestBody(year, month, day);
+    }
+
     public Date toSqlDate(){
-        return Date.valueOf(LocalDate.of(this.year, this.month, this.day));
+        LocalDate date = LocalDate.of(this.year, this.month, this.day).minus(1, java.time.temporal.ChronoUnit.DAYS);
+        return Date.valueOf(date);
     }
     public Date getWeekLater(){
         LocalDate weekLater = LocalDate.of(this.year, this.month, this.day).plusDays(7);
